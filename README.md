@@ -19,8 +19,7 @@ Expected artifacts are:
 ## Appendix A: Project Requirements
 AI-Powered Digital Assistant Platform (AIDAP)
 
-The **AI-Powered Digital Assistant Platform (AIDAP)** provides a conversational interface for students, faculty, and administrators to interact with institutional data such as course schedules, deadlines, announcements, and academic analytics.  
-The assistant integrates with external university systems (LMS, registration, calendars, and mail) and uses AI to deliver contextual answers.
+The **AI-Powered Digital Assistant Platform (AIDAP)** provides a conversational interface for students, faculty, and administrators to interact with institutional data such as course schedules, deadlines, announcements, and academic analytics. The assistant integrates with external university systems (LMS, registration, calendars, and mail) and uses AI to deliver contextual answers.
 
 ---
 
