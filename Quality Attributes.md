@@ -7,3 +7,5 @@ Scenario: The system should process and respond to the student's queries withing
 Associated Requirement: RS10
 
 QA-2  Modifiability
+
+Scenario: A new AI model is introduced to the system to support a language that the system did not have without affecting the other system components and whithout downtime
