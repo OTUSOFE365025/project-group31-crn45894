@@ -1,22 +1,7 @@
-Add the Quality Attributes to this file
-
-QA-1:  Performance
-
-Scenario: The system processes and responds to the student's queries withing 2 seconds under normal load and 5 seconds under heavy load.
-
-Associated Requirement: RS10
-
-QA-2:  Modifiability
-
-Scenario: A new AI model is introduced to the system to support a language that the system did not have without affecting the other system components and without 
-downtime.
-
-Associated Requirement: RS4, RM1, RM5
-
-QA-3:  Availability
-
-Scenario: If the query service encounters a failure during normal operation, the system switches to the backup service and resumes within 30 seconds.
-
-Associated Requirement: RS11, RA6
-
-QA-4: 
+# Quality Attributes
+| ID | Quality Attribute Scenario | Associated Use Case |
+|----|-----------------------------|---------------------|
+| **QA-1 (Performance)**<br>When a student queries their next exam, AIDAP shall respond within 2 seconds under normal load conditions, ensuring seamless conversational interaction. *(RS10)* | UC-1 |
+| **QA-2 (Availability)**<br>During high-traffic periods (e.g., registration week), AIDAP remains accessible with ≥99.5% uptime per month, employing auto-scaling and failover strategies. *(RS11, RA6)* | UC-1, UC-2 |
+| **QA-3 (Modifiability)**<br>A new AI model is introduced to the system to support a language that the system did not have without affecting the other system components and without 
+downtime. *(RS4, RM1, RM5)* | NEED USE CASES |
