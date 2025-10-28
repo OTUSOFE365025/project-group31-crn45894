@@ -1,12 +1,10 @@
 # SOFE3650F25 Project Repository Template
-## Objective
 The objective of this project is to demonstrate a methodological set of steps in the design of a software
 architecture for a set of requirements listed in Appendix A. The expected design approach to take is
-the Attribute Driven Design (ADD) presented in some detail in the text book [1] and briefly
-overviewed here
+the Attribute Driven Design (ADD).
 
 ## Deliverables
-The expectation is to submit a set of artifacts that demonstrates the ADD steps as applied to the design and implementation of an AI-Powered Digital Assistant Platform
+The expectation is to submit a set of artifacts that demonstrates the ADD steps as applied to the design and implementation of an AI-Powered Digital Assistant Platform.
 
 ## Phase 1
 Use cases, quality attributes and constraint requirements of the project need to be defined based on the requirements that are provided below.
@@ -19,7 +17,7 @@ Expected artifacts are:
 ## Phase 2
 
 ## Appendix A: Project Requirements
-## AI-Powered Digital Assistant Platform (AIDAP)
+AI-Powered Digital Assistant Platform (AIDAP)
 
 The **AI-Powered Digital Assistant Platform (AIDAP)** provides a conversational interface for students, faculty, and administrators to interact with institutional data such as course schedules, deadlines, announcements, and academic analytics.  
 The assistant integrates with external university systems (LMS, registration, calendars, and mail) and uses AI to deliver contextual answers.
