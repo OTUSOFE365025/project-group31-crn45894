@@ -8,4 +8,6 @@
 | **UC-4: Deploy System Update** | A system maintainer deploys a software update using the automated CI/CD pipeline. AIDAP applies the update with zero downtime and logs deployment status. | R7, RM1, RM2, RM7 |
 **UC-5: Monitor System Usage Analytics** | An administrator queries system usage statistics such as daily active users, most common query types, and peak hours. AIDAP retrieves analytics and displays a summarized report. | R1, R6, RA4, R7 |
 
+Use Case Model:
+
 <img width="466" height="728" alt="image" src="https://github.com/user-attachments/assets/42db3157-bd47-4a3e-a5f7-1eadab7d0eb5" />
