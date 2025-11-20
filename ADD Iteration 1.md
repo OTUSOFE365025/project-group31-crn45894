@@ -127,7 +127,8 @@ Because the goal of this iteration is to establish the overall system structure,
 ## Step 6: Sketch Views and Record Design Decisions
 
 Layer View:
-
+<img width="750" height="559" alt="image" src="https://github.com/user-attachments/assets/35cb76bb-27ad-41d1-98eb-83db4beb38c1" />
+<img width="681" height="703" alt="image" src="https://github.com/user-attachments/assets/8d826c22-e67d-4413-9e5c-82859ebea8f9" />
 
 
 
@@ -158,6 +159,7 @@ Layer View:
 | Service Agents  | These modules connect to external systems such as the LMS, SIS, grade systems, and other academic services, supporting UC-1, UC-2, and QA-1. |
 
 Deployment Diagram:  
+<img width="811" height="379" alt="image" src="https://github.com/user-attachments/assets/788eeeee-fdb3-427c-a1d3-9540b46552a5" />
 
 
 | Node | Component | Responsibilities |
