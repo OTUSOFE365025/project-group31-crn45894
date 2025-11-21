@@ -1,104 +1,164 @@
-# AIDAP Architectural Design – Iterations 2
-
----
-
-## Iteration 2 – Establish Overall System Structure
+# AIDAP Architectural Design – ADD Iteration 2
 
 ## Step 1: Review Inputs
 
-**Design Purpose:**
+### Design Context
 
-AIDAP is a greenfield system intended to provide AI-driven academic assistance to students and faculty.  
-The purpose of the architectural design is to produce a sufficiently detailed structure that supports:
+From Iteration 1, AIDAP has an overall architecture with:
 
-- conversational query handling,
-- secure integration with university systems,
-- high availability during peak periods,
-- modifiable AI components, and
-- compliance with privacy policies.
+- Rich client frontend (web / mobile / voice)
+- Server-side layers:
+  - Services
+  - Business Logic
+  - Data
+  - Cross-cutting
+- Cloud-native three-tier deployment (client, application server, database)
 
-**Primary functional requirements:**
+This iteration refines the **server-side application** to better satisfy performance, availability, and privacy requirements.
 
-These are the main use cases relevant to the architectural design.
-
-| Use Case | Description |
-| ----- | ----- |
-| UC-1: Retrieve Exam Schedule | A student interacts with AIDAP via mobile app, web chat, or voice interface to ask about upcoming exams. AIDAP retrieves and returns the nearest exam with full details. |
-| UC-2: Post Course Announcement | A lecturer requests AIDAP to post an announcement to a course. AIDAP validates permissions, connects to the LMS API, posts the announcement, and confirms completion. |
-| UC-4: Deploy System Update | A system maintainer deploys a system update through CI/CD. AIDAP applies the update with zero downtime and logs deployment results. |
-
-## Step 2: Establish Iteration goal by selecting drivers
-
-### Goal
-
-Establish the overall system structure for AIDAP that:
-
-- Supports the core student and instructor interaction flows (UC-1, UC-2)
-- Allows updates and new AI models to be deployed with zero downtime (UC-4)
-- Ensures secure access through SSO and strict privacy compliance
-- Enables cloud-native deployment with scalable components to handle peak usage
-- Keeps the AI model logic, data access, and external system integrations modular to support future expansion
-
-### Drivers Selected for Iteration 1
-
-#### Functional drivers
+### Relevant Functional Requirements / Use Cases
 
 - **UC-1: Retrieve Exam Schedule**  
-  Core student-facing interaction; requires fast response times and reliable data access.
+  A student asks AIDAP for upcoming exams; backend must fetch schedule data and return within 2 seconds.
 
 - **UC-2: Post Course Announcement**  
-  Requires LMS integration, authentication, authorization, and consistent API communication.
+  A lecturer issues a conversational command; backend validates permissions and posts to the LMS via standard APIs.
 
 - **UC-4: Deploy System Update**  
-  High architectural impact due to modifiability and the requirement for zero downtime.
+  A maintainer deploys a new version of the backend / AI without downtime and with safe rollback.
 
-#### Quality attribute drivers
+### Quality Attribute Drivers
 
-- **QA-2: Availability**  
-  Critical due to expected high traffic at times like registration day. Influences decisions on redundancy, auto-scaling, load balancing, and service decomposition.
+- **QA-1 Performance**  
+  Respond to student queries within **2 seconds** on average under normal load.
 
-- **QA-3: Modifiability**  
-  High business and technical priority. Strong influence on modular architecture, plug-and-play AI models, CI/CD structure, and service boundaries.
+- **QA-2 Availability & Scalability**  
+  At least **99.5% availability per month** and support for up to **5,000 concurrent users**, with automatic failover and backup.
 
-- **QA-1: Performance**  
-  The requirement to answer queries within 2 seconds shapes caching, API design, and system interaction patterns.
+- **QA-4 Privacy & Security**  
+  Protect user data, enforce access control and retention, secure backup/restore, and comply with institutional policies.
 
-- **QA-4: Privacy**  
-  Mandatory compliance requirement influencing data logging, storage, access control, encryption, and isolation of sensitive components.
+### Constraints
 
-#### Constraint drivers
+- **CON-1** – Use **university SSO** for authentication.
+- **CON-2** – External systems use **standard REST/GraphQL** APIs.
+- **CON-5** – **Cloud-native deployment**: containerized and orchestrated.
+- **CON-6** – Enforce **data retention and encryption standards**.
 
-- **CON-1: University SSO authentication**  
-  Determines identity management integration and influences gateway and backend design.
+---
 
-- **CON-2: REST/GraphQL communication**  
-  Determines communication style and integration patterns with external systems.
+## Step 2: Establish Iteration Goal by Selecting Drivers
 
-- **CON-5: Cloud-native deployment**  
-  Influences containerization, orchestration decisions, and service granularity.
+### Iteration 2 Goal
 
-- **CON-6: Data retention & encryption standards**  
-  Drives how data is stored, encrypted, logged, and managed across components.
+Refine the **AIDAP Server-Side Backend** (Services + Business Logic + Data + Cross-Cutting) so that:
+
+- It can serve **UC-1** and **UC-2** within the **2-second response time** at normal load (QA-1).
+- It can **scale and remain available** at **5,000 concurrent users with 99.5% uptime** (QA-2).
+- It enforces **strict privacy and security** for student and lecturer data (QA-4, CON-1, CON-6).
+- It remains **modifiably deployable**, supporting UC-4 and zero-downtime updates.
+
+### Drivers for This Iteration
+
+**Functional drivers**
+
+- UC-1: Retrieve Exam Schedule  
+- UC-2: Post Course Announcement  
+- UC-4: Deploy System Update  
+
+**Quality attribute drivers**
+
+- QA-1 Performance  
+- QA-2 Availability / Scalability  
+- QA-4 Privacy / Security  
+
+**Constraint drivers**
+
+- CON-1 SSO  
+- CON-2 REST/GraphQL integration  
+- CON-5 Cloud-native  
+- CON-6 Data retention & encryption  
+
+---
 
 ## Step 3: Choose Elements of the System to Decompose
 
-At the start of Iteration 1, the entire AIDAP system is treated as a single black-box element:
+From Iteration 1, the server side is organized into:
 
-### Element
+- Services
+- Business Logic
+- Data
+- Cross-Cutting
 
-- **AIDAP System (root system)**
+For Iteration 2 we select:
 
-Because the goal of this iteration is to establish the overall system structure, this root element is selected for decomposition.
+> **Element to Decompose:**  
+> **AIDAP Server-Side Backend** (encompassing the Services, Business Logic, Data, and Cross-Cutting layers running in the Application Server Node).
 
-## Step 4: Choosing Design Concepts
+---
 
-| Design Decisions | Reason For Decision |
-| ----- | ----- |
-| Logically structure the system using a Three-Layered Architecture | A layered architecture separates presentation, business logic, and data access responsibilities. This supports QA-3 Modifiability, since new AI models, external APIs, and UI channels can be changed independently. It supports QA-5 Usability by keeping interface logic isolated and easier to evolve. It supports CON-2, since external system communication is restricted to well-defined API boundaries. Privacy concerns (QA-4, CON-3, CON-4) are addressed by restricting sensitive operations to the application and data layers. |
-| Physically structure the deployment using a Cloud-Native Three-Tier Deployment Pattern | A three-tier deployment supports QA-2 Availability through load-balanced application servers and scalable infrastructure. It satisfies CON-5, which requires cloud-native deployment, and CON-6, which mandates controlled and encrypted data storage. The separation of tiers also simplifies future scalability decisions (CRN-3). |
-| Use a Service Application Reference Architecture for AIDAP’s backend service layer | Service-oriented applications expose functionality via APIs consumed by clients. This directly supports CON-2, which requires standardized REST/GraphQL API communication. It aligns with QA-1 Performance by enabling optimized, scalable API endpoints. It also supports QA-4 Privacy, allowing centralized enforcement of authentication and authorization. |
-| Adopt a Modular AI Model Management Subsystem within the Application Layer | This subsystem allows AI models to be added, replaced, or removed without affecting other system components, directly satisfying QA-3 Modifiability. It supports UC-4 (system updates with zero downtime). It also addresses CRN-1 by making technology choices flexible. |
-| Implement SSO-based Authentication and Role-Based Access Control (RBAC) at the Presentation–Application boundary | SSO satisfies CON-1 by using the university’s authentication system. RBAC ensures that private student data is only accessed by the authenticated student (CON-4, QA-4 Privacy). Combining both mechanisms isolates authentication logic and simplifies maintainability (CRN-2, CRN-4). |
-| Logically structure the client part of the system using the Rich Client Application reference architecture | The Rich Client Application reference architecture supports the development of applications that run directly on the user’s device and provide an interactive, responsive interface. This approach is suitable for AIDAP because it allows the client to deliver smooth conversational interactions and fast response times, helping meet QA-1 Performance during typical student queries. The RCA model also supports adaptive and intuitive interfaces, which contributes to fulfilling QA-5 Usability, even though usability is not the main driver behind this decision. In addition, by keeping sensitive operations local to the authenticated session, this architecture assists in satisfying QA-4 Privacy and ensuring that student data is only accessible to authorized users in accordance with CON-4. Although rich client applications do not rely solely on browser execution, they can still interact seamlessly with backend services through standardized REST/GraphQL APIs, ensuring compliance with CON-2. |
+## Step 4: Choose Design Concepts
 
-#
+1. **Modular Monolith Backend with Internal Service Modules**
+2. **Ports-and-Adapters (Hexagonal) for Integrations**
+3. **Read-Optimized Query Path with Caching**
+4. **Asynchronous Processing for Non-Critical Tasks**
+5. **Centralized Security & Privacy Facade**
+6. **Stateless Backend Instances with Blue-Green / Rolling Deployments**
+
+---
+
+## Step 5: Instantiate Architectural Elements, Allocate Responsibilities, and Define Interfaces
+
+### 5.1 Core Service Modules
+
+### 5.1 Core Service Modules
+
+| Module | Responsibilities | Interfaces |
+|--------|------------------|------------|
+| **API Gateway / Request Router** | - Terminates HTTPS connections<br>- Parses REST/GraphQL requests<br>- Routes requests to internal modules (`ExamService`, `AnnouncementService`, `AIOrchestrationService`)<br>- Calls `AuthService` + `SecurityPrivacyFacade` for validation | - `GET /api/exams/next`<br>- `GET /api/exams/schedule`<br>- `POST /api/courses/{courseId}/announcements` |
+| **AuthService** | - Integrates with university SSO<br>- Validates tokens and retrieves user roles | - `validateToken(token): AuthContext`<br>- `getUserRoles(userId): RoleSet` |
+| **Security & Privacy Facade** | - Centralizes authorization logic<br>- Performs redaction and data minimization<br>- Records audit logs for sensitive operations | - `checkAccess(authContext, action, resource): Decision`<br>- `filterResponse(authContext, rawData): RedactedData`<br>- `recordAuditEvent(authContext, action, resource)` |
+| **ExamService** | - Handles UC-1 requests for upcoming exams<br>- Uses read-optimized repository + cache<br>- Ensures <2 sec response under normal load | - `getNextExamForStudent(studentId): ExamInfo`<br>- `getExamSchedule(studentId, timeRange): List<ExamInfo>` |
+| **AnnouncementService** | - Handles UC-2<br>- Validates instructor permissions<br|- Uses `LMSAdapter` to post announcements | - `postAnnouncement(courseId, lecturerId, content): Result` |
+| **AIOrchestrationService** | - Interprets natural-language queries<br>- Selects model versions and interacts with AI providers<br>- Generates final responses | - `interpretQuery(authContext, inputText): Intent+Params`<br>- `generateResponse(context, intentResult): Answer`<br>- `setActiveModel(modelId, version)` |
+
+---
+
+### 5.2 Integration & Data Modules
+
+- `LMSAdapter`, `SISAdapter`, `CalendarAdapter`, `EmailAdapter`
+- `ExamReadRepository`, `ExamWriteRepository`
+- `ExamCache`, `CourseCache`
+- `Monitoring & Telemetry Module`
+
+---
+
+## Step 6: Sketch Views and Record Design Decisions
+
+### 6.1 Backend Module View
+
+See:
+
+### 6.2 Deployment View
+
+See:
+
+---
+
+## Step 7: Analysis of Design
+
+| Driver | Coverage | Explanation |
+|--------|----------|-------------|
+| UC-1 | Full | Optimized read path through cache + DB |
+| UC-2 | Full | LMSAdapter + SecurityFacade handle permissions & integration |
+| UC-4 | Partial | Supports blue-green but CI/CD details are future work |
+| QA-1 | Partial/Strong | Caching, async tasks, horizontal scaling |
+| QA-2 | Partial | Clustered backend, but DB/Cache failover still needed |
+| QA-4 | Partial | Privacy Facade + audit logging; retention/crypto TBD |
+| CON-1 | Full | AuthService |
+| CON-2 | Full | REST/GraphQL boundaries |
+| CON-5 | Full | Cloud-native deployment |
+| CON-6 | Partial | Secure DB/Cache; policy details pending |
+
+---
