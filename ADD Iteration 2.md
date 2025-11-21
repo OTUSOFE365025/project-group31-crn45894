@@ -112,8 +112,6 @@ For Iteration 2 we select:
 
 ### 5.1 Core Service Modules
 
-### 5.1 Core Service Modules
-
 | Module | Responsibilities | Interfaces |
 |--------|------------------|------------|
 | **API Gateway / Request Router** | - Terminates HTTPS connections<br>- Parses REST/GraphQL requests<br>- Routes requests to internal modules (`ExamService`, `AnnouncementService`, `AIOrchestrationService`)<br>- Calls `AuthService` + `SecurityPrivacyFacade` for validation | - `GET /api/exams/next`<br>- `GET /api/exams/schedule`<br>- `POST /api/courses/{courseId}/announcements` |
