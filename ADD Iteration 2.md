@@ -140,7 +140,8 @@ See:
 
 ### 6.2 Deployment View
 
-See:
+See (note that Backend Instance 2 has the same cache protocol, read-only SQL, and SQL connections as Backend Instance 1):
+<img width="882" height="1047" alt="image" src="https://github.com/user-attachments/assets/d6a54079-8a15-4033-b636-4ebf643c89c0" />
 
 ---
 
