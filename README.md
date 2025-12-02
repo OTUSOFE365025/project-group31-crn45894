@@ -122,3 +122,7 @@ The **AI-Powered Digital Assistant Platform (AIDAP)** provides a conversational 
 | **RD2** | The system shall use standard APIs (REST or GraphQL) for interoperability. |
 | **RD3** | The system shall handle failures in data source availability gracefully (retry and recovery). |
 | **RD4** | The system shall maintain data integrity and consistency across systems. |
+
+ATAM UTILITY TREE:
+
+<img width="1041" height="672" alt="image" src="https://github.com/user-attachments/assets/ee7d5c51-3462-4174-b9bb-57c526759104" />
