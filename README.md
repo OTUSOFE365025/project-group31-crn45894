@@ -126,3 +126,97 @@ The **AI-Powered Digital Assistant Platform (AIDAP)** provides a conversational 
 ATAM UTILITY TREE:
 
 <img width="1041" height="672" alt="image" src="https://github.com/user-attachments/assets/ee7d5c51-3462-4174-b9bb-57c526759104" />
+
+
+ATAM ASSESSMENT: 
+
+
+SENSITIVITY
+
+
+S1
+The model latency is sensitive, as even a small increase in it violates QA-1.
+
+
+S2 
+The number of instances available during peak load hours is sensitive to the uptime of AIDAP.
+Even small configuration mistakes can bring uptimes below 99.5%.
+
+
+S3 
+This applies to QA-3 because it is sensitive to how well the components have been decoupled, which allows for easy addition of new AI models.
+If the architecture is tightly coupled, even minor model changes cause downtime.
+
+
+
+S4 
+Privacy regulation compliance is sensitive to how logs are stored/encrypted (QA-4).
+A small misconfiguration can make stored responses non-compliant.
+Tradeoff Points (T)
+
+
+TRADEOFFS
+
+
+T1 
+Stronger encryption for logs improves privacy - QA-4
+However, this design increases latency while reducing performance. QA-1
+
+
+T2 
+Decoupling the AI model from the backend increases modifiability: QA-3
+but adds network hops and serialization overhead which can lead to slower responses.
+
+
+T3
+Auto-scaling ensures ≥ 99.5% uptime (QA-2),
+but scaling up instances increases operational cost and may introduce cold-start delays.
+
+
+T4 
+Increasing modifiability by easily allowing plug-and-play model updates.
+However, this increases the attack surface for malicious or unverified models.
+
+
+RISKS:
+
+
+R1 
+If too many users query at the same time, latency may exceed 2 seconds QA-1:, breaking a key system requirement.
+
+
+R2 
+ Poorly configured load balancers and/or failover rules will result in unavailability of AIDAP during peak periods.
+
+
+R3 
+ Updates may require downtime, thus violating QA-3, in case new AI model integration reveals undocumented dependencies. 
+
+
+R4
+Logs in which user queries are stored without masking sensitive data violate privacy regulations.
+
+
+ R5 
+ Data integrity is compromised when unauthorized backend components can read or modify model outputs
+
+
+NON RISKS
+
+
+ NR1 
+Utilizing auto-scaling with appropriate thresholds When properly tuned, auto-scaling meets the availability goals without harming performance.
+
+
+ NR2 
+Decoupled model architecture A microservice-style separation between AI model and backend does not harm modifiability; in fact, it provides support for QA-3.
+
+
+ NR3
+ Using encrypted logs Encrypting logs does not noticeably affect response latency thanks to modern hardware acceleration.
+
+
+ NR4
+ Rolling updates for model deployment Continuous deployment with rolling updates assures no downtime, which is consistent with modifiability goals. Non-risk.
+
+
