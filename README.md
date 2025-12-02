@@ -150,9 +150,8 @@ If the architecture is tightly coupled, even minor model changes cause downtime.
 
 
 S4: 
-Privacy regulation compliance is sensitive to how logs are stored/encrypted (QA-4).
-A small misconfiguration can make stored responses non-compliant.
-Tradeoff Points (T)
+Privacy regulation compliance is sensitive to how logs are stored (QA-4).
+A small misconfiguration can make stored responses non compliant.
 
 
 TRADEOFFS
@@ -169,16 +168,16 @@ but adds network hops and serialization overhead which can lead to slower respon
 
 
 T3:
-Auto-scaling ensures ≥ 99.5% uptime (QA-2),
-but scaling up instances increases operational cost and may introduce cold-start delays.
+Auto-scaling ensures at least 99.5% uptime,
+but scaling up instances increases operational cost and may come with delays.
 
 
 T4: 
-Increasing modifiability by easily allowing plug-and-play model updates.
+Increasing modifiability by easily allowing easy model updates.
 However, this increases the attack surface for malicious or unverified models.
 
 
-RISKS:
+RISKS
 
 
 R1: 
@@ -186,7 +185,7 @@ If too many users query at the same time, latency may exceed 2 seconds QA-1:, br
 
 
 R2: 
- Poorly configured load balancers and/or failover rules will result in unavailability of AIDAP during peak periods.
+ Poorly configured load balancers or failover rules will result in unavailability of AIDAP during peak periods.
 
 
 R3: 
@@ -209,7 +208,7 @@ Utilizing auto-scaling with appropriate thresholds When properly tuned, auto-sca
 
 
  NR2: 
-Decoupled model architecture A microservice-style separation between AI model and backend does not harm modifiability; in fact, it provides support for QA-3.
+Decoupled model architecture A microservice-style separation between AI model and backend dont harm modifiability but it provides support for QA-3.
 
 
  NR3:
