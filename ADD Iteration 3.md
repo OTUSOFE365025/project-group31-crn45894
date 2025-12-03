@@ -13,7 +13,7 @@ From Iteration 2, the **AIDAP Server-Side Backend** is structured as a modular m
 
 Iteration 2 ensured basic performance and availability for UC-1 and UC-2, and introduced a **Security & Privacy Facade**, but **QA-4 Privacy/Security** and **CON-6 retention/encryption** are only partially addressed.
 
-This iteration focuses on turning **Security & Privacy + Data Protection** into a first-class, well-structured subsystem.
+This iteration focuses on **Security & Privacy + Data Protection**
 
 ### Relevant Functional Requirements / Use Cases
 
