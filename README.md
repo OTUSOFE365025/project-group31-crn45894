@@ -218,4 +218,77 @@ Decoupled model architecture A microservice-style separation between AI model an
  NR4:
  Rolling updates for model deployment Continuous deployment with rolling updates assures no downtime, which is consistent with modifiability goals. Non-risk.
 
+# QA-1 — Performance
 
+## Analysing Scenario: QA-1
+
+| Field | Description |
+|-------|-------------|
+| **Scenario** | The system experiences increased query load during normal operation. |
+| **Attributes** | Performance |
+| **Stimulus** | Many users query the model at the same time, slowing response time. |
+| **Environment** | Normal or peak hours with active users. |
+| **Response** | The system must respond within 2 seconds even if its under peak load. |
+
+## Architecture Decisions
+
+| Architecture Decision | Sensitivity | Tradeoff | Risk | Non-Risk |
+|----------------------|-------------|----------|------|----------|
+| AD1: Optimize the models performance by caching & efficient pipelines | S1 | T1 | R1 | NR3 |
+
+# QA-2 — Availability
+
+## Analysing Scenario: QA-2
+
+| Field | Description |
+|-------|-------------|
+| **Scenario** | AIDAP has to remain available during peak hours or if a component fails. |
+| **Attributes** | Availability |
+| **Stimulus** | Load balancer issues, scaling delays, or node failure during peak hours. |
+| **Environment** | Peak operation. |
+| **Response** | System must have at least 99.5% uptime by auto-scaling with no interruptions. |
+
+## Architecture Decisions
+
+| Architecture Decision | Sensitivity | Tradeoff | Risk | Non-Risk |
+|----------------------|-------------|----------|------|----------|
+| AD2: Auto-scaling| S2 | T3 | R2 | NR1 |
+
+
+# QA-3 — Modifiability 
+
+## Analysing Scenario: QA-3
+
+| Field | Description |
+|-------|-------------|
+| **Scenario** | New AI models or updates must fit in easily into the system. |
+| **Attributes** | Modifiability |
+| **Stimulus** | A new AI model version or a new model type must be implemented into the system. |
+| **Environment** | Normal operation. |
+| **Response** | The system must support safe updates without downtime. The system must be highly cohesive with little coupling |
+
+## Architecture Decisions
+
+| Architecture Decision | Sensitivity | Tradeoff | Risk | Non-Risk |
+|----------------------|-------------|----------|------|----------|
+| AD3: Decoupled AI model service. | S3 | T2 | R3 | NR2 |
+| AD4: Rolling update mechanism for model deployment | S3 | T4 | R3 | NR4 |
+
+# QA-4 — Security
+
+## Analysing Scenario: QA-4
+
+| Field | Description |
+|-------|-------------|
+| **Scenario** | User queries and model responses must keep user data safe. |
+| **Attributes** | Security |
+| **Stimulus** | Logs contain sensitive user data or misconfigurations could expose information. |
+| **Environment** | Normal logging and monitoring operations. |
+| **Response** | All logs must remain encrypted or masked, meeting privacy regulations. |
+
+## Architecture Decisions
+
+| Architecture Decision | Sensitivity | Tradeoff | Risk | Non-Risk |
+|----------------------|-------------|----------|------|----------|
+| AD5: Encrypted logging system | S4 | T1 | R4 | NR3 |
+| AD6: Restricted backend access and user must be validated to access data | S4 | T4 | R5 | NR4 |
