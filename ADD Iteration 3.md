@@ -17,8 +17,6 @@ This iteration focuses on **Security & Privacy + Data Protection**
 
 ### Relevant Functional Requirements / Use Cases
 
-We re-use existing use cases, but we now look at them through a **security & data protection** lens:
-
 - **UC-1: Retrieve Exam Schedule**  
   - Ensure only the **right student** or authorized staff can see a given schedule.  
   - Enforce data minimization (only required fields) and secure queries.
@@ -29,8 +27,6 @@ We re-use existing use cases, but we now look at them through a **security & dat
 
 - **UC-4: Deploy System Update**  
   - Security configuration (policies, keys, secrets, retention rules) must **survive rolling / blue-green deployments** and be centrally managed.
-
-(If later we define explicit “privacy operations” use cases like “Export my data” / “Forget my data”, they will also land on this subsystem.)
 
 ### Quality Attribute Drivers
 
