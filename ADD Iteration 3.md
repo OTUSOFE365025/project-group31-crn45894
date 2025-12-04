@@ -252,12 +252,6 @@ We now choose design concepts (patterns & tactics) that address the above driver
 
 ---
 
-
-
-
-
-
-
 # Step 5: Instantiate Architectural Elements, Allocate Responsibilities, and Define Interfaces
 
 ## 5.1 Security, Privacy & Data Protection Modules
@@ -297,7 +291,61 @@ We now choose design concepts (patterns & tactics) that address the above driver
 ---
 
 ## Step 6: Sketch Views and Record Design Decisions
+In Iteration 3 we sketch **focused, security-centric views**:
 
+- **6.1 Security Component View** – main security modules + how they relate.
+- **6.2 UC-1 Security Flow (Sequence)** – how “Retrieve Exam Schedule” goes through security.
+- **6.3 Security Deployment View** – where security runs in the cloud-native deployment.
+  
+---
+
+### 6.1 Security Component View (Condensed)
+
+**Purpose:** Show how the **API Gateway**, **Security & Privacy Subsystem**, **Domain Services**, and **Data/Infra** relate.
+
+**Diagram 6.1 – Security, Privacy & Data Protection – Component View**  
+<img width="2008" height="1045" alt="image" src="https://github.com/user-attachments/assets/b80a84ea-b1f9-48a8-bcac-cf34716c2657" />
+
+**Design decisions:**
+- All domain services **depend on `Security & Privacy Facade`**, not directly on IdP or KMS.
+- Policy decisions and storage are **centralized** in a `PolicyEngine` (PDP + PolicyStore).
+- Crypto is **abstracted** behind `DataProtectionService` and a **KMS**.
+- `DataRetentionService` and `AuditLogService` are **decoupled** from the request path and can evolve independently.
+
+---
+
+### 6.2 UC-1 Security Flow – Retrieve Exam Schedule
+
+**Purpose:** Show how security is enforced *end-to-end* for **UC-1: Retrieve Exam Schedule**.
+
+**Diagram 6.2 – UC-1: Retrieve Exam Schedule – Security Flow**  
+<img width="1216" height="738" alt="image" src="https://github.com/user-attachments/assets/e9718177-416e-4c19-8e90-3d3d381221f2" />
+
+**Design decisions:**
+- **Two tiers of authorization**:
+  - At the **API Gateway** (coarse-grained, endpoint-level).
+  - Within the **ExamService** (fine-grained, resource-level).
+- Decryption via `DataProtectionService` occurs **only after** a successful authorization decision.
+- `filterResponse` in the Security & Privacy Facade enforces **data minimization** before results leave the backend.
+- All sensitive actions (viewing schedules, posting announcements, etc.) are recorded through `AuditLogService` for **accountability and traceability**.
+
+---
+
+### 6.3 Security Deployment View (Condensed)
+
+**Purpose:** Show where security components live in the **cloud-native deployment**.
+
+**Diagram 6.3 – Security & Privacy – Deployment View (Condensed)**  
+<img width="1679" height="578" alt="image" src="https://github.com/user-attachments/assets/dae5b039-992a-4e55-954e-a1fc72c3cd44" />
+
+**Design decisions:**
+- Security logic (`Security & Privacy` components) is **co-located** with the backend in the same Kubernetes cluster, but modeled as a **separate container** for clarity and modifiability.
+- **DataRetentionService** and **SecurityEventMonitor** run as **background jobs**, so they **do not impact** the latency of UC-1 / UC-2.
+- **AIDAP DB**, **Audit Log Store**, and **KMS** are shared infrastructure services with:
+  - **TLS in transit** and  
+  - **encryption at rest**,  
+  satisfying **CON-5 (cloud-native containerized)** and **CON-6 (retention & encryption standards)**.
+- This deployment supports **horizontal scaling** of API Gateway, backend, and security components, contributing to **QA-2 (availability & scalability)** while maintaining **QA-4 (privacy & security)**.
 
 ---
 
