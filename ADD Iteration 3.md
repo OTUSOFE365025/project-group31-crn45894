@@ -307,7 +307,6 @@ In Iteration 3 we sketch **focused, security-centric views**:
 
 <img width="2008" height="1045" alt="image" src="https://github.com/user-attachments/assets/b80a84ea-b1f9-48a8-bcac-cf34716c2657" />
 
-**Design decisions:**
 - All domain services **depend on `Security & Privacy Facade`**, not directly on IdP or KMS.
 - Policy decisions and storage are **centralized** in a `PolicyEngine` (PDP + PolicyStore).
 - Crypto is **abstracted** behind `DataProtectionService` and a **KMS**.
@@ -323,7 +322,6 @@ In Iteration 3 we sketch **focused, security-centric views**:
 
 <img width="1216" height="738" alt="image" src="https://github.com/user-attachments/assets/e9718177-416e-4c19-8e90-3d3d381221f2" />
 
-**Design decisions:**
 - **Two tiers of authorization**:
   - At the **API Gateway** (coarse-grained, endpoint-level).
   - Within the **ExamService** (fine-grained, resource-level).
@@ -341,7 +339,6 @@ In Iteration 3 we sketch **focused, security-centric views**:
 
 <img width="1679" height="578" alt="image" src="https://github.com/user-attachments/assets/dae5b039-992a-4e55-954e-a1fc72c3cd44" />
 
-**Design decisions:**
 - Security logic (`Security & Privacy` components) is **co-located** with the backend in the same Kubernetes cluster, but modeled as a **separate container** for clarity and modifiability.
 - **DataRetentionService** and **SecurityEventMonitor** run as **background jobs**, so they **do not impact** the latency of UC-1 / UC-2.
 - **AIDAP DB**, **Audit Log Store**, and **KMS** are shared infrastructure services with:
