@@ -304,6 +304,7 @@ In Iteration 3 we sketch **focused, security-centric views**:
 **Purpose:** Show how the **API Gateway**, **Security & Privacy Subsystem**, **Domain Services**, and **Data/Infra** relate.
 
 **Diagram 6.1 – Security, Privacy & Data Protection – Component View**  
+
 <img width="2008" height="1045" alt="image" src="https://github.com/user-attachments/assets/b80a84ea-b1f9-48a8-bcac-cf34716c2657" />
 
 **Design decisions:**
@@ -319,6 +320,7 @@ In Iteration 3 we sketch **focused, security-centric views**:
 **Purpose:** Show how security is enforced *end-to-end* for **UC-1: Retrieve Exam Schedule**.
 
 **Diagram 6.2 – UC-1: Retrieve Exam Schedule – Security Flow**  
+
 <img width="1216" height="738" alt="image" src="https://github.com/user-attachments/assets/e9718177-416e-4c19-8e90-3d3d381221f2" />
 
 **Design decisions:**
@@ -336,6 +338,7 @@ In Iteration 3 we sketch **focused, security-centric views**:
 **Purpose:** Show where security components live in the **cloud-native deployment**.
 
 **Diagram 6.3 – Security & Privacy – Deployment View (Condensed)**  
+
 <img width="1679" height="578" alt="image" src="https://github.com/user-attachments/assets/dae5b039-992a-4e55-954e-a1fc72c3cd44" />
 
 **Design decisions:**
