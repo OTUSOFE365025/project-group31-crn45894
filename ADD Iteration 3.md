@@ -214,3 +214,106 @@ We now choose design concepts (patterns & tactics) that address the above driver
    - **Why:**  
      - Reduces coupling and makes it possible to switch IdPs, change policy engine, or move to a different KMS without rewriting domain modules.
 
+# Step 5: Instantiate Architectural Elements, Allocate Responsibilities, and Define Interfaces
+
+## 5.1 Security, Privacy & Data Protection Modules
+
+| **Module**                                       | **Responsibilities**                                                                                                                                                                                  | **Interfaces**                                                                                                                                                                                                                               |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **AuthAdapter (IdP Integration)**                | - Integrates with university SSO (OIDC/SAML)<br>- Validates JWT tokens (signatures, expiry, scopes)<br>- Fetches user identity and group/role claims                                                  | - `validateToken(jwt): AuthContext`<br>- `refreshToken(refreshToken): TokenPair`<br>- `fetchUserInfo(authContext): UserProfile`                                                                                                              |
+| **Security & Privacy Facade**                    | - Central entry point for authorization & privacy decisions<br>- Performs coarse + fine-grained checks<br>- Applies role/policy rules, redaction, and minimization<br>- Emits structured audit events | - `authorize(authContext, action, resource): Decision`<br>- `filterResponse(authContext, data, viewType): RedactedData`<br>- `onSensitiveAction(authContext, action, resource, outcome)`<br>- `getSecurityContext(request): SecurityContext` |
+| **PolicyDecisionService (PDP)**                  | - Evaluates RBAC/ABAC/PBAC authorization rules<br>- Supports endpoint-level and record-level policy checks<br>- Retrieves rules from the PolicyStore                                                  | - `decide(authContext, action, resourceAttrs): Decision`<br>- `explainDecision(id): PolicyTrace`                                                                                                                                             |
+| **PolicyStore**                                  | - Stores all policies, roles, and retention configurations<br>- Supports versioning and staged activation                                                                                             | - `getActivePolicies(): PolicySet`<br>- `getPolicyById(policyId): Policy`<br>- `listPoliciesByScope(scope): List<Policy>`                                                                                                                    |
+| **DataProtectionService (Crypto / KMS Adapter)** | - Encrypts/decrypts sensitive fields<br>- Uses external KMS / secret manager<br>- Handles key rotation and key alias management                                                                       | - `encrypt(field, plaintext): Ciphertext`<br>- `decrypt(field, ciphertext): Plaintext`<br>- `getKeyMetadata(field): KeyInfo`                                                                                                                 |
+| **DataRetentionService**                         | - Executes scheduled deletion/anonymization based on retention policies<br>- Scans DB for expired or tagged data models<br>- Generates retention and policy-compliance reports                        | - `runRetentionCycle(policyId): RetentionReport`<br>- `tagRecord(recordId, policyTag)`<br>- `previewImpact(policyId): ImpactSummary`                                                                                                         |
+| **AuditLogService**                              | - Stores structured security audit events<br>- Ensures immutable, append-only logging<br>- Correlates events using request IDs                                                                        | - `recordEvent(authContext, action, resource, outcome, metadata)`<br>- `searchEvents(filter): List<AuditEvent>`                                                                                                                              |
+| **SecurityEventMonitor**                         | - Reads audit log stream for anomaly detection<br>- Issues alerts for suspicious behavior patterns                                                                                                    | - `evaluateHealth(): SecurityHealthStatus`<br>- `runDetectionRules(): List<Alert>`                                                                                                                                                           |
+| **TokenRevocationStore (Optional)**              | - Maintains a list of invalidated tokens<br>- Used for forced logout or emergency access blocks                                                                                                       | - `isRevoked(tokenId): boolean`<br>- `revokeToken(tokenId, reason)`                                                                                                                                                                          |
+
+---
+
+## 5.2 Interactions with Existing Backend Modules
+
+### API Gateway / Request Router
+
+**Responsibilities**
+
+* Validates JWT using `AuthAdapter`
+* Builds `AuthContext` and attaches to request
+* Performs coarse-grained authorization using the `Security & Privacy Facade`
+* Forwards authorized requests to domain services with an attached `SecurityContext`
+
+**Operational Flow (UC-1 / UC-2)**
+
+1. Receive HTTPS request with token
+2. `AuthAdapter.validateToken(jwt)` → produces `AuthContext`
+3. `SecurityFacade.authorize(AuthContext, action, resource)` at API boundary
+4. If allowed, forward to the domain service
+
+---
+
+
+
+
+
+
+
+# Step 5: Instantiate Architectural Elements, Allocate Responsibilities, and Define Interfaces
+
+## 5.1 Security, Privacy & Data Protection Modules
+
+| **Module**                                       | **Responsibilities**                                                                                                                                                                                  | **Interfaces**                                                                                                                                                                                                                               |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **AuthAdapter (IdP Integration)**                | - Integrates with university SSO (OIDC/SAML)<br>- Validates JWT tokens (signatures, expiry, scopes)<br>- Fetches user identity and group/role claims                                                  | - `validateToken(jwt): AuthContext`<br>- `refreshToken(refreshToken): TokenPair`<br>- `fetchUserInfo(authContext): UserProfile`                                                                                                              |
+| **Security & Privacy Facade**                    | - Central entry point for authorization & privacy decisions<br>- Performs coarse + fine-grained checks<br>- Applies role/policy rules, redaction, and minimization<br>- Emits structured audit events | - `authorize(authContext, action, resource): Decision`<br>- `filterResponse(authContext, data, viewType): RedactedData`<br>- `onSensitiveAction(authContext, action, resource, outcome)`<br>- `getSecurityContext(request): SecurityContext` |
+| **PolicyDecisionService (PDP)**                  | - Evaluates RBAC/ABAC/PBAC authorization rules<br>- Supports endpoint-level and record-level policy checks<br>- Retrieves rules from the PolicyStore                                                  | - `decide(authContext, action, resourceAttrs): Decision`<br>- `explainDecision(id): PolicyTrace`                                                                                                                                             |
+| **PolicyStore**                                  | - Stores all policies, roles, and retention configurations<br>- Supports versioning and staged activation                                                                                             | - `getActivePolicies(): PolicySet`<br>- `getPolicyById(policyId): Policy`<br>- `listPoliciesByScope(scope): List<Policy>`                                                                                                                    |
+| **DataProtectionService (Crypto / KMS Adapter)** | - Encrypts/decrypts sensitive fields<br>- Uses external KMS / secret manager<br>- Handles key rotation and key alias management                                                                       | - `encrypt(field, plaintext): Ciphertext`<br>- `decrypt(field, ciphertext): Plaintext`<br>- `getKeyMetadata(field): KeyInfo`                                                                                                                 |
+| **DataRetentionService**                         | - Executes scheduled deletion/anonymization based on retention policies<br>- Scans DB for expired or tagged data models<br>- Generates retention and policy-compliance reports                        | - `runRetentionCycle(policyId): RetentionReport`<br>- `tagRecord(recordId, policyTag)`<br>- `previewImpact(policyId): ImpactSummary`                                                                                                         |
+| **AuditLogService**                              | - Stores structured security audit events<br>- Ensures immutable, append-only logging<br>- Correlates events using request IDs                                                                        | - `recordEvent(authContext, action, resource, outcome, metadata)`<br>- `searchEvents(filter): List<AuditEvent>`                                                                                                                              |
+| **SecurityEventMonitor**                         | - Reads audit log stream for anomaly detection<br>- Issues alerts for suspicious behavior patterns                                                                                                    | - `evaluateHealth(): SecurityHealthStatus`<br>- `runDetectionRules(): List<Alert>`                                                                                                                                                           |
+| **TokenRevocationStore (Optional)**              | - Maintains a list of invalidated tokens<br>- Used for forced logout or emergency access blocks                                                                                                       | - `isRevoked(tokenId): boolean`<br>- `revokeToken(tokenId, reason)`                                                                                                                                                                          |
+
+---
+
+## 5.2 Interactions with Existing Backend Modules
+
+### API Gateway / Request Router
+
+**Responsibilities**
+
+* Validates JWT using `AuthAdapter`
+* Builds `AuthContext` and attaches to request
+* Performs coarse-grained authorization using the `Security & Privacy Facade`
+* Forwards authorized requests to domain services with an attached `SecurityContext`
+
+**Operational Flow (UC-1 / UC-2)**
+
+1. Receive HTTPS request with token
+2. `AuthAdapter.validateToken(jwt)` → produces `AuthContext`
+3. `SecurityFacade.authorize(AuthContext, action, resource)` at API boundary
+4. If allowed, forward to the domain service
+
+---
+
+## Step 6: Sketch Views and Record Design Decisions
+
+
+---
+
+## Step 7: Analysis of Design
+
+| Driver                               | Coverage         | Explanation                                                                                                                                                                                              |
+| ------------------------------------ | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **UC-1: Retrieve Exam Schedule**     | Full             | Authorization occurs at API + service level; response filtering ensures privacy; encrypted fields are only decrypted after approval; audit logs capture access.                                          |
+| **UC-2: Post Course Announcement**   | Full             | Instructor roles validated by policies; unauthorized posts blocked; every announcement event logged for traceability.                                                                                    |
+| **UC-4: Deploy System Update**       | Partial / Strong | Security policy configuration, encryption keys, and retention rules are externalized and persist across deployments. CI/CD specifics remain future work.                                                 |
+| **QA-4: Privacy & Security**         | Strong           | Central Security Facade, PDP, field-level encryption, structured auditing, and retention engine provide robust privacy-by-design coverage. Remaining work includes detailed incident-response workflows. |
+| **QA-2: Availability & Scalability** | Partial / Strong | Security components are horizontally scalable (AuthAdapter, PDP replicas, audit log pipeline). IdP, KMS, and DB assumed to have HA configurations but not detailed here.                                 |
+| **QA-1: Performance (<2s)**          | Acceptable       | Token validation is lightweight; PDP evaluations are fast; crypto is applied selectively; overall overhead remains small enough to meet UC-1/UC-2 timing constraints.                                    |
+| **CON-1: SSO**                       | Full             | All authentication flows use the institution’s identity provider (OIDC/SAML).                                                                                                                            |
+| **CON-2: REST/GraphQL**              | Full             | Security and authorization applied cleanly at all API boundaries.                                                                                                                                        |
+| **CON-5: Cloud-Native Deployment**   | Full             | All security modules run as scalable containerized services, matching cloud-native constraints.                                                                                                          |
+| **CON-6: Retention & Encryption**    | Partial / Strong | Transparent storage encryption + field-level encryption + automated retention policies implemented. Further institution-specific compliance rules required.                                              |
+
+---
