@@ -122,3 +122,173 @@ The **AI-Powered Digital Assistant Platform (AIDAP)** provides a conversational 
 | **RD2** | The system shall use standard APIs (REST or GraphQL) for interoperability. |
 | **RD3** | The system shall handle failures in data source availability gracefully (retry and recovery). |
 | **RD4** | The system shall maintain data integrity and consistency across systems. |
+
+ATAM UTILITY TREE:
+
+<img width="1041" height="672" alt="image" src="https://github.com/user-attachments/assets/ee7d5c51-3462-4174-b9bb-57c526759104" />
+
+
+ATAM ASSESSMENT: 
+
+
+SENSITIVITY
+
+
+S1:
+The model latency is sensitive, as even a small increase in it violates QA-1.
+
+
+S2:
+The number of instances available during peak load hours is sensitive to the uptime of AIDAP.
+Even small configuration mistakes can bring uptimes below 99.5%.
+
+
+S3: 
+This applies to QA-3 because it is sensitive to how well the components have been decoupled, which allows for easy addition of new AI models.
+If the architecture is tightly coupled, even minor model changes cause downtime.
+
+
+
+S4: 
+Privacy regulation compliance is sensitive to how logs are stored (QA-4).
+A small misconfiguration can make stored responses non compliant.
+
+
+TRADEOFFS
+
+
+T1: 
+Stronger encryption for logs improves privacy - QA-4
+However, this design increases latency while reducing performance. QA-1
+
+
+T2: 
+Decoupling the AI model from the backend increases modifiability: QA-3
+but adds network hops and serialization overhead which can lead to slower responses.
+
+
+T3:
+Auto-scaling ensures at least 99.5% uptime,
+but scaling up instances increases operational cost and may come with delays.
+
+
+T4: 
+Increasing modifiability by easily allowing easy model updates.
+However, this increases the attack surface for malicious or unverified models.
+
+
+RISKS
+
+
+R1: 
+If too many users query at the same time, latency may exceed 2 seconds QA-1:, breaking a key system requirement.
+
+
+R2: 
+ Poorly configured load balancers or failover rules will result in unavailability of AIDAP during peak periods.
+
+
+R3: 
+ Updates may require downtime, thus violating QA-3, in case new AI model integration reveals undocumented dependencies. 
+
+
+R4:
+Logs in which user queries are stored without masking sensitive data violate privacy regulations.
+
+
+ R5: 
+ Data integrity is compromised when unauthorized backend components can read or modify model outputs
+
+
+NON RISKS
+
+
+ NR1: 
+Utilizing auto-scaling with appropriate thresholds When properly tuned, auto-scaling meets the availability goals without harming performance.
+
+
+ NR2: 
+Decoupled model architecture A microservice-style separation between AI model and backend dont harm modifiability but it provides support for QA-3.
+
+
+ NR3:
+ Using encrypted logs Encrypting logs does not noticeably affect response latency thanks to modern hardware acceleration.
+
+
+ NR4:
+ Rolling updates for model deployment Continuous deployment with rolling updates assures no downtime, which is consistent with modifiability goals. Non-risk.
+
+# QA-1 — Performance
+
+## Analysing Scenario: QA-1
+
+| Field | Description |
+|-------|-------------|
+| **Scenario** | The system experiences increased query load during normal operation. |
+| **Attributes** | Performance |
+| **Stimulus** | Many users query the model at the same time, slowing response time. |
+| **Environment** | Normal or peak hours with active users. |
+| **Response** | The system must respond within 2 seconds even if its under peak load. |
+
+## Architecture Decisions
+
+| Architecture Decision | Sensitivity | Tradeoff | Risk | Non-Risk |
+|----------------------|-------------|----------|------|----------|
+| AD1: Optimize the models performance by caching & efficient pipelines | S1 | T1 | R1 | NR3 |
+
+# QA-2 — Availability
+
+## Analysing Scenario: QA-2
+
+| Field | Description |
+|-------|-------------|
+| **Scenario** | AIDAP has to remain available during peak hours or if a component fails. |
+| **Attributes** | Availability |
+| **Stimulus** | Load balancer issues, scaling delays, or node failure during peak hours. |
+| **Environment** | Peak operation. |
+| **Response** | System must have at least 99.5% uptime by auto-scaling with no interruptions. |
+
+## Architecture Decisions
+
+| Architecture Decision | Sensitivity | Tradeoff | Risk | Non-Risk |
+|----------------------|-------------|----------|------|----------|
+| AD2: Auto-scaling| S2 | T3 | R2 | NR1 |
+
+
+# QA-3 — Modifiability 
+
+## Analysing Scenario: QA-3
+
+| Field | Description |
+|-------|-------------|
+| **Scenario** | New AI models or updates must fit in easily into the system. |
+| **Attributes** | Modifiability |
+| **Stimulus** | A new AI model version or a new model type must be implemented into the system. |
+| **Environment** | Normal operation. |
+| **Response** | The system must support safe updates without downtime. The system must be highly cohesive with little coupling |
+
+## Architecture Decisions
+
+| Architecture Decision | Sensitivity | Tradeoff | Risk | Non-Risk |
+|----------------------|-------------|----------|------|----------|
+| AD3: Decoupled AI model service. | S3 | T2 | R3 | NR2 |
+| AD4: Rolling update mechanism for model deployment | S3 | T4 | R3 | NR4 |
+
+# QA-4 — Security
+
+## Analysing Scenario: QA-4
+
+| Field | Description |
+|-------|-------------|
+| **Scenario** | User queries and model responses must keep user data safe. |
+| **Attributes** | Security |
+| **Stimulus** | Logs contain sensitive user data or misconfigurations could expose information. |
+| **Environment** | Normal logging and monitoring operations. |
+| **Response** | All logs must remain encrypted or masked, meeting privacy regulations. |
+
+## Architecture Decisions
+
+| Architecture Decision | Sensitivity | Tradeoff | Risk | Non-Risk |
+|----------------------|-------------|----------|------|----------|
+| AD5: Encrypted logging system | S4 | T1 | R4 | NR3 |
+| AD6: Restricted backend access and user must be validated to access data | S4 | T4 | R5 | NR4 |
